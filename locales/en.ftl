@@ -4,8 +4,11 @@ language_command =
     .description = Change language
 setcommands_command =
     .description = Set bot commands
-
+connect_command =
+    .description = Connect Tropipay account
+    .message = Connect your Tropipay wallet to continue
 welcome = Welcome!
+get_store = See store items
 language = 
     .select = Please, select your language
     .changed = Language successfully changed!

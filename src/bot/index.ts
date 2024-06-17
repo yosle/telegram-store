@@ -12,12 +12,13 @@ import {
 } from '#root/bot/context.js'
 import {
   adminFeature,
+  connectFeature,
   languageFeature,
   unhandledFeature,
   welcomeFeature,
 } from '#root/bot/features/index.js'
 import { errorHandler } from '#root/bot/handlers/index.js'
-import { i18n, isMultipleLocales } from '#root/bot/i18n.js'
+import { i18n } from '#root/bot/i18n.js'
 import { updateLogger } from '#root/bot/middlewares/index.js'
 import { config } from '#root/config.js'
 import { logger } from '#root/logger.js'
@@ -55,9 +56,10 @@ export function createBot(token: string, options: Options = {}) {
   // Handlers
   protectedBot.use(welcomeFeature)
   protectedBot.use(adminFeature)
+  protectedBot.use(connectFeature)
 
-  if (isMultipleLocales)
-    protectedBot.use(languageFeature)
+  // if (isMultipleLocales)
+  protectedBot.use(languageFeature)
 
   // must be the last handler
   protectedBot.use(unhandledFeature)

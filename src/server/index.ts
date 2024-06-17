@@ -46,6 +46,20 @@ export function createServer(bot: Bot) {
 
   server.get('/', c => c.json({ status: true }))
 
+  server.get(
+    '/payment',
+    c => c.json({ status: true }),
+  )
+  server.post(
+    '/oauth/callback',
+    (c) => {
+      c.req.json().then(() => {
+        // console.log('callback', data)
+      })
+
+      return c.json({ status: true })
+    },
+  )
   server.post(
     '/webhook',
     webhookCallback(bot, 'hono', {
