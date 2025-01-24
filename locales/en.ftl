@@ -9,6 +9,7 @@ connect_command =
     .message = Connect your Tropipay wallet to continue
 welcome = Welcome!
 get_store = See store items
+main_menu = Main Menu
 language = 
     .select = Please, select your language
     .changed = Language successfully changed!

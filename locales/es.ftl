@@ -6,10 +6,10 @@ setcommands_command =
     .description = Configurar Comandos
 connect_command =
     .description = Connect Tropipay account
-    .message = Conecta tu billetra tropipay al bot para continuar
+    .message = Conecta tu billetea tropipay al bot para continuar
 welcome = Bienvenido!
 get_store = Ver en la tienda
-
+main_menu = Menu Principal
 language = 
     .select = Porfavor selecciona el idioma
     .changed = Idioma cambiado exitosamente!
