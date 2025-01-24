@@ -3,6 +3,8 @@ import { hydrate } from '@grammyjs/hydrate'
 import { hydrateReply, parseMode } from '@grammyjs/parse-mode'
 import type { BotConfig, StorageAdapter } from 'grammy'
 import { Bot as TelegramBot, session } from 'grammy'
+import { PrismaAdapter } from '@grammyjs/storage-prisma'
+import { PrismaClient } from '@prisma/client'
 import type {
   Context,
   SessionData,
@@ -29,7 +31,8 @@ interface Options {
 }
 
 export function createBot(token: string, options: Options = {}) {
-  const { sessionStorage } = options
+  const prisma = new PrismaClient()
+
   const bot = new TelegramBot(token, {
     ...options.config,
     ContextConstructor: createContextConstructor({ logger }),
@@ -45,10 +48,16 @@ export function createBot(token: string, options: Options = {}) {
   protectedBot.use(autoChatAction(bot.api))
   protectedBot.use(hydrateReply)
   protectedBot.use(hydrate())
+
   protectedBot.use(
     session({
-      initial: () => ({}),
-      storage: sessionStorage,
+      initial: () => ({
+        isConnected: false,
+        tpp_token: null,
+        agreedTerms: false,
+      }),
+      storage: new PrismaAdapter(prisma.session),
+
     }),
   )
   protectedBot.use(i18n)

@@ -8,6 +8,9 @@ import type { Logger } from '#root/logger.js'
 
 export interface SessionData {
   // field?: string;
+  isConnected: boolean
+  tpp_token: string | null
+  agreedTerms: boolean
 }
 
 interface ExtendedContextFlavor {
