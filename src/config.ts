@@ -33,6 +33,12 @@ function createConfigFromEnvironment(environment: NodeJS.ProcessEnv) {
       .default([]),
     BOT_ADMINS: z.array(z.number()).default([]),
     TERMS_LINK: z.string(),
+    TPP_CLIENT_ID: z.string(),
+    TPP_CLIENT_SECRET: z.string(),
+    OAUTH_REDIRECT_URI: z.string(),
+    TPP_SERVER: z.string(),
+    TPP_SCOPES: z.string(),
+    BOT_BASE_URL: z.string(),
   })
 
   if (config.BOT_MODE === 'webhook') {

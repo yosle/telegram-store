@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Movements" ALTER COLUMN "tgId" SET DATA TYPE TEXT;
