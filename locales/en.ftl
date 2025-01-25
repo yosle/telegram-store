@@ -7,7 +7,10 @@ setcommands_command =
 connect_command =
     .description = Connect Tropipay account
     .message = Connect your Tropipay wallet to continue
-welcome = Welcome!
+welcome = Welcome back {$userName}! use the button bellow to manage your Tropipay account 
+sign_up_welcome = Hello {$userName}!, please connect your Tropipay account to continue. 
+ (By using this bot you agreed the terms and conditions).
+see_terms_and_conditions=See terms and conditions
 get_store = See store items
 main_menu = Main Menu
 language = 

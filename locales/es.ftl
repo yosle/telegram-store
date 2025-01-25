@@ -7,7 +7,10 @@ setcommands_command =
 connect_command =
     .description = Connect Tropipay account
     .message = Conecta tu billetea tropipay al bot para continuar
-welcome = Bienvenido!
+welcome = ¡Bienvenido  { $userName } ! usa los botones de abajo para ejecutar una accion
+sign_up_welcome = Hello { $userName }!, por favor conecta tu cuenta Tropipay para continuar.
+ (Al usar el bot asumimos que aceptas los terminos y condiciones).
+see_terms_and_conditions=Ver terminos y condiciones
 get_store = Ver en la tienda
 main_menu = Menu Principal
 language = 

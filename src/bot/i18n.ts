@@ -4,7 +4,7 @@ import { I18n } from '@grammyjs/i18n'
 import type { Context } from '#root/bot/context.js'
 
 export const i18n = new I18n<Context>({
-  defaultLocale: 'en',
+  defaultLocale: 'es',
   directory: path.resolve(process.cwd(), 'locales'),
   useSession: true,
   fluentBundleOptions: {

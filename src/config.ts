@@ -32,6 +32,7 @@ function createConfigFromEnvironment(environment: NodeJS.ProcessEnv) {
       .array(z.enum(API_CONSTANTS.ALL_UPDATE_TYPES))
       .default([]),
     BOT_ADMINS: z.array(z.number()).default([]),
+    TERMS_LINK: z.string(),
   })
 
   if (config.BOT_MODE === 'webhook') {

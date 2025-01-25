@@ -2,6 +2,7 @@ import { Composer } from 'grammy'
 import { connectToTropipay } from '../callback-data/connect-to-tpp.js'
 import type { Context } from '#root/bot/context.js'
 import { logHandle } from '#root/bot/helpers/logging.js'
+import { config } from '#root/config.js'
 
 const composer = new Composer<Context>()
 
@@ -25,7 +26,7 @@ feature.callbackQuery(
 
 feature.command('start', logHandle('command-start'), (ctx) => {
   if (ctx.session.isConnected) {
-    return ctx.reply(`Bienvenido,${ctx.chat.first_name} usa los botones de abajo para ejecutar una accion`, {
+    return ctx.reply(`${ctx.t('welcome', { userName: ctx.chat.first_name })} ${ctx.chat.first_name}`, {
       reply_markup: {
         inline_keyboard: [
           [
@@ -39,17 +40,21 @@ feature.command('start', logHandle('command-start'), (ctx) => {
     })
   }
   else {
-    return ctx.reply(ctx.t('welcome'), {
+    return ctx.reply(ctx.t('sign_up_welcome', { userName: ctx.chat.first_name, terms: config.TERMS_LINK }), {
       reply_markup: {
         inline_keyboard: [
           [
             {
-
               callback_data: connectToTropipay.pack({
                 token: 'localeCode',
               }),
               text: 'Conectar con Tropipay',
-
+            },
+          ],
+          [
+            {
+              url: config.TERMS_LINK,
+              text: ctx.t('see_terms_and_conditions'),
             },
           ],
         ],
