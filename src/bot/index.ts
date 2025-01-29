@@ -52,9 +52,10 @@ export function createBot(token: string, options: Options = {}) {
   protectedBot.use(
     session({
       initial: () => ({
-        isConnected: false,
-        tpp_token: null,
+        hasBeenConnected: false,
+        tppToken: null,
         agreedTerms: false,
+        tppTokenExpirationDate: null,
       }),
       storage: new PrismaAdapter(prisma.session),
 

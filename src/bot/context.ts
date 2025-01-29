@@ -8,8 +8,9 @@ import type { Logger } from '#root/logger.js'
 
 export interface SessionData {
   // field?: string;
-  isConnected: boolean
-  tpp_token: string | null
+  hasBeenConnected: boolean
+  tppToken: string | null
+  tppTokenExpirationDate: string | null
   agreedTerms: boolean
 }
 

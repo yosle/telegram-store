@@ -14,15 +14,19 @@ model Session {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  tgId      BigInt   @unique
-  createdAt DateTime @default(now())
-  email     String?  @unique
-  username  String?  @db.VarChar(255)
-  firstName String?  @db.VarChar(255)
-
-  role      Role        @default(USER)
-  movements Movements[]
+  id                         Int         @id @default(autoincrement())
+  tgId                       BigInt      @unique
+  email                      String?     @unique
+  username                   String?     @db.VarChar(255)
+  firstName                  String?     @db.VarChar(255)
+  phone                      String?
+  tppToken                   String?
+  tppTokenExpirationDateTime DateTime?
+  hasBeenConnected           Boolean     @default(false)
+  role                       Role        @default(USER)
+  movements                  Movements[]
+  createdAt                  DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt                  DateTime    @updatedAt @db.Timestamptz(6)
 }
 
 model Movements {

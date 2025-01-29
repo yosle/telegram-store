@@ -7,6 +7,7 @@ import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { webhookCallback } from 'grammy'
 import { getPath } from 'hono/utils/url'
 import axios from 'axios'
+import { PrismaClient } from '@prisma/client'
 import { requestId } from './middlewares/request-id.js'
 import { logger } from './middlewares/logger.js'
 import type { Env } from './environment.js'
@@ -18,7 +19,9 @@ import { base64URLEncode, sha256 } from '#root/bot/helpers/oauth.js'
 const tropipay_scope: string = config.TPP_SCOPES// Scope of the access request
 const clientId: string = config.TPP_CLIENT_ID // Client identifier at the Authorization Server
 
-const redirect_uri: string = config.OAUTH_REDIRECT_URI
+const redirect_uri: string = `${config.OAUTH_REDIRECT_URI}`
+
+// const prisma = new PrismaClient()
 
 export function createServer(bot: Bot) {
   const server = new Hono<Env>()
@@ -65,6 +68,7 @@ export function createServer(bot: Bot) {
 
       setCookie(c, 'state', state)
       setCookie(c, 'code_verifier', code_verifier)
+      setCookie(c, 'sid', 'qwerty123')
 
       const linkParams = new URLSearchParams({
         response_type: 'code',
@@ -97,6 +101,7 @@ export function createServer(bot: Bot) {
       const code = c.req.query('code') // For example, the 'code' parameter
       const state = c.req.query('state') // If there's a 'state' parameter
       const code_verifier = getCookie(c, 'code_verifier')
+      const sid = getCookie(c, 'sid')
 
       if (!state || !code) {
         return c.html(`
@@ -122,11 +127,12 @@ export function createServer(bot: Bot) {
         `)
       }
 
-      c.var.logger.info('Callback queries:', queries)
-      c.var.logger.info('Code:', code)
-      c.var.logger.info('State:', state)
-      c.var.logger.info('Code verifier', code_verifier)
-      c.var.logger.info('State from cookie', getCookie(c, 'state'))
+      c.var.logger.info(`Callback queries: ${JSON.stringify(queries)}`)
+      c.var.logger.info(`Code: ${code}`)
+      c.var.logger.info(`State: ${state}`)
+      c.var.logger.info(`Code verifier ${code_verifier}`)
+      c.var.logger.info(`Session ID: ${sid}`)
+      c.var.logger.info(`State from cookie: ${getCookie(c, 'state')}`)
 
       try {
         const token = await axios.post(
@@ -145,43 +151,95 @@ export function createServer(bot: Bot) {
           },
         )
         const access_token = token.data.access_token
-
+        c.var.logger.debug(`TPP TOKEN: ${access_token}`)
         // save in database
         const profileData = await axios({
           headers: { Authorization: `Bearer ${access_token}` },
           url: `${config.TPP_SERVER}/api/users/profile`,
         })
         const data = profileData?.data
-        c.var.logger.debug('profile data from user ', data)
+        c.var.logger.debug(`profile data from user ${JSON.stringify(data)}`)
+
+        deleteCookie(c, 'state')
+        deleteCookie(c, 'code_verifier')
+
+        return c.html(`
+          <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Conexión Exitosa</title>
+     <style>
+       body {
+         font-family: Arial, sans-serif;
+         background: #f4f4f4;
+         color: #333;
+         text-align: center;
+         padding: 50px;
+       }
+       h1 {
+         color: #28a745;
+       }
+       p {
+         margin: 15px 0;
+       }
+       a {
+         color: #007BFF;
+         text-decoration: none;
+       }
+       a:hover {
+         text-decoration: underline;
+       }
+       .button {
+         display: inline-block;
+         margin-top: 20px;
+         padding: 10px 20px;
+         background-color: #007BFF;
+         color: #fff;
+         text-decoration: none;
+         border-radius: 5px;
+         font-size: 16px;
+       }
+       .button:hover {
+         background-color: #0056b3;
+       }
+     </style>
+   </head>
+   <body>
+     <h1>¡Conexión Exitosa!</h1>
+     <p>Tu cuenta Tropipay se ha conectado correctamente.</p>
+     <p>Si no se abre Telegram automáticamente, haz clic en el siguiente enlace:</p>
+     <a class="button" href="tg://resolve?domain=YourTelegramBot">Abrir Telegram</a>
+   </body>
+   </html>   
+         `)
       }
+
       catch (error) {
         c.var.logger.error(error)
+        return c.html(`
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Error</title>
+            <style>
+              body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; text-align: center; padding: 50px; }
+              h1 { color: #ff6347; }
+              a { color: #007BFF; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Oops, something went wrong!</h1>
+            <p>We encountered an error while processing your request.</p>
+            <p><a href="/">Go back to Home</a></p>
+          </body>
+          </html>
+        `)
       }
-
-      deleteCookie(c, 'state')
-      deleteCookie(c, 'code_verifier')
-
-      return c.html(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Error</title>
-          <style>
-            body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; text-align: center; padding: 50px; }
-            h1 { color: #ff6347; }
-            a { color: #007BFF; text-decoration: none; }
-            a:hover { text-decoration: underline; }
-          </style>
-        </head>
-        <body>
-          <h1>Oops, something went wrong!</h1>
-          <p>We encountered an error while processing your request.</p>
-          <p><a href="/">Go back to Home</a></p>
-        </body>
-        </html>
-      `)
     },
   )
   server.post(
